@@ -605,7 +605,6 @@
     });
 
     // ── Native Payment Sheet (Apple Pay + Google Pay) ──────
-    // Opens the native wallet sheet DIRECTLY on the page (exactly like the screenshots)
     async function showNativeSheet(amountCents) {
       if (!window.Stripe) return stripeCheckout(amountCents);
 
@@ -622,23 +621,25 @@
       let canPay;
       try { canPay = await pr.canMakePayment(); } catch(_) {}
 
-      if (!canPay) {
-        // Device doesn’t support native sheet — open Stripe hosted checkout
+      // ONLY open native sheet when Apple Pay OR Google Pay is specifically available
+      // If only "link" is available (Stripe Link), skip to hosted checkout instead
+      const hasNativeWallet = canPay && (canPay.applePay === true || canPay.googlePay === true);
+
+      if (!hasNativeWallet) {
+        // Go directly to Stripe checkout — it shows Apple Pay / Google Pay at the top
         return stripeCheckout(amountCents);
       }
 
-      // Open the native Google Pay / Apple Pay sheet
+      // Native Apple Pay or Google Pay is available — show the sheet directly
       pr.show();
 
       pr.on('paymentmethod', (ev) => {
         ev.complete('success');
-        // Open Stripe checkout to finalize & capture the charge
-        stripeCheckout(amountCents);
+        stripeCheckout(amountCents); // Confirm & capture via Stripe
       });
 
       pr.on('cancel', () => {
-        // User dismissed the sheet — reopen the modal
-        openModal(payModal);
+        openModal(payModal); // User dismissed — let them try again
       });
     }
 

@@ -1295,3 +1295,9 @@ p, li { text-wrap: pretty; max-width: 66ch; }
   80%      { transform: translateX(4px); }
 }
 .shake { animation: shake 0.4s ease; }
+
+.pay-gpay-fallback {
+  width: 100%; height: 56px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+}

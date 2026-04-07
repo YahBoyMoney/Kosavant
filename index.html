@@ -334,17 +334,18 @@
           </svg>
         </button>
 
-        <!-- Google Pay (Android) / Card (iOS) -->
-        <button class="pay-native-btn pay-native-btn--google" id="googlePayBtn" aria-label="Pay with Google Pay or Card">
-          <svg id="gpayIcon" width="58" height="24" viewBox="0 0 80 34" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-            <text x="0" y="26" font-size="26" font-family="'Google Sans',Roboto,sans-serif" font-weight="500">
-              <tspan fill="#4285F4">G</tspan><tspan fill="#EA4335">o</tspan><tspan fill="#FBBC05">o</tspan><tspan fill="#4285F4">g</tspan><tspan fill="#34A853">l</tspan><tspan fill="#EA4335">e </tspan><tspan fill="white">Pay</tspan>
-            </text>
-          </svg>
-          <svg id="cardIcon" width="22" height="18" viewBox="0 0 24 18" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" style="display:none" aria-hidden="true">
-            <rect x="1" y="1" width="22" height="16" rx="2"/><line x1="1" y1="6" x2="23" y2="6"/>
-          </svg>
-        </button>
+        <!-- Google Pay — Stripe renders real button with card icons -->
+        <div id="googlePayMount" class="pay-native-btn pay-native-btn--google" style="padding:0;overflow:hidden">
+          <!-- Stripe mounts here — fallback shows if unavailable -->
+          <div id="googlePayStripe" style="height:56px"></div>
+          <button id="googlePayBtn" class="pay-gpay-fallback" style="display:none" aria-label="Pay with Google Pay">
+            <svg width="58" height="24" viewBox="0 0 80 34" fill="none" aria-hidden="true">
+              <text x="0" y="26" font-size="26" font-family="'Google Sans',Roboto,sans-serif" font-weight="500">
+                <tspan fill="#4285F4">G</tspan><tspan fill="#EA4335">o</tspan><tspan fill="#FBBC05">o</tspan><tspan fill="#4285F4">g</tspan><tspan fill="#34A853">l</tspan><tspan fill="#EA4335">e </tspan><tspan fill="white">Pay</tspan>
+              </text>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Bitcoin -->
@@ -566,23 +567,61 @@
       } catch(_) {}
     }
 
-    // Detect iOS — swap Google Pay button to "Pay by Card" on iPhone/iPad
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    if (isIOS) {
-      document.getElementById('gpayIcon').style.display = 'none';
-      document.getElementById('cardIcon').style.display  = 'block';
-      document.getElementById('googlePayBtn').setAttribute('aria-label', 'Pay by Card');
-      document.getElementById('googlePayBtn').style.background = '#1a1a2e';
+    // ── Mount real Stripe Google Pay button ───────────────
+    let _gpayMounted = false;
+
+    async function mountGooglePayButton() {
+      if (!window.Stripe || _gpayMounted) return;
+      try {
+        const stripe  = Stripe(STRIPE_PK);
+        const cents   = getAmountCents() || 100;
+        const pr      = stripe.paymentRequest({
+          country: 'US', currency: 'usd',
+          total: { label: 'KO Savant', amount: cents },
+          requestPayerName: true, requestShipping: false,
+        });
+
+        const elements = stripe.elements();
+        const prBtn    = elements.create('paymentRequestButton', {
+          paymentRequest: pr,
+          style: { paymentRequestButton: { theme: 'dark', height: '56px' } },
+        });
+
+        const result = await pr.canMakePayment();
+        if (result && result.googlePay) {
+          // Real Stripe Google Pay button with cards
+          document.getElementById('googlePayStripe').style.height = '56px';
+          prBtn.mount('#googlePayStripe');
+          _gpayMounted = true;
+
+          pr.on('paymentmethod', (ev) => {
+            ev.complete('success');
+            stripeCheckout(getAmountCents() || 100);
+          });
+          pr.on('cancel', () => openModal(payModal));
+
+          // Keep Apple Pay using separate instance
+          if (!_pr) { _pr = pr; _hasApple = result.applePay === true; _hasGoogle = true; }
+        } else {
+          // Not available — show fallback button
+          document.getElementById('googlePayStripe').style.display = 'none';
+          document.getElementById('googlePayBtn').style.display    = 'flex';
+        }
+      } catch(e) {
+        document.getElementById('googlePayStripe').style.display = 'none';
+        document.getElementById('googlePayBtn').style.display    = 'flex';
+      }
     }
 
-    // Open modal + start background init
+    // Open modal + init everything
     payBtn.addEventListener('click', () => {
       openModal(payModal);
-      initPaymentRequest();
+      initPaymentRequest();      // for Apple Pay
+      mountGooglePayButton();    // for Google Pay (Stripe rendered)
       setTimeout(() => document.getElementById('payAmount').focus(), 300);
     });
 
-    // Apple Pay — opens Apple Wallet with entered amount
+    // Apple Pay — opens Apple Wallet
     document.getElementById('applePayBtn').addEventListener('click', () => {
       if (!requireAmount()) return;
       const cents = getAmountCents();
@@ -595,18 +634,10 @@
       }
     });
 
-    // Google Pay — opens Google Pay platform with entered amount
+    // Google Pay fallback button (when Stripe button not available)
     document.getElementById('googlePayBtn').addEventListener('click', () => {
       if (!requireAmount()) return;
-      const cents = getAmountCents();
-      closeModal(payModal);
-      if (_pr && _hasGoogle) {
-        try { _pr.update({ total: { label: 'KO Savant', amount: cents } }); } catch(_) {}
-        _pr.show();
-      } else {
-        // Fallback: open Stripe checkout which shows Google Pay at the top
-        stripeCheckout(cents);
-      }
+      stripeCheckout(getAmountCents());
     });
 
     // Bitcoin → show BTC modal

@@ -516,14 +516,42 @@
     payCloseBtn.addEventListener('click', () => closeModal(payModal, payBtn));
     payModal.addEventListener('click', e => { if (e.target === payModal) closeModal(payModal, payBtn); });
 
-    // Apple Pay — runs through Stripe (supports native Apple Pay on Safari/iPhone)
-    applePayBtn.addEventListener('click', () => {
+    // Apple Pay — native Apple Wallet via Stripe.js, fallback to Stripe checkout
+    applePayBtn.addEventListener('click', async () => {
       closeModal(payModal);
       const rawAmount = document.getElementById('payAmount').value;
-      const amountUSD = parseFloat(rawAmount) > 0 ? parseFloat(rawAmount).toFixed(2) : null;
-      const url = amountUSD
-        ? `${STRIPE_PAY_LINK}?prefilled_amount=${Math.round(parseFloat(amountUSD) * 100)}`
-        : STRIPE_PAY_LINK;
+      const amountCents = parseFloat(rawAmount) > 0
+        ? Math.round(parseFloat(rawAmount) * 100)
+        : 100;
+      const amountStr = (amountCents / 100).toFixed(2);
+
+      // Try to open native Apple Wallet via Stripe.js
+      if (window.Stripe && window.ApplePaySession && ApplePaySession.canMakePayments()) {
+        try {
+          const stripe = Stripe(STRIPE_PK);
+          const pr = stripe.paymentRequest({
+            country: 'US',
+            currency: 'usd',
+            total: { label: 'KO Savant', amount: amountCents },
+            requestPayerName: true,
+            requestPayerEmail: false,
+          });
+
+          const result = await pr.canMakePayment();
+          if (result && result.applePay) {
+            pr.show();
+            pr.on('paymentmethod', (ev) => {
+              // Apple Pay authorized — complete and redirect to Stripe to finalize charge
+              ev.complete('success');
+              window.location.href = `${STRIPE_PAY_LINK}?prefilled_amount=${amountCents}`;
+            });
+            return; // Wallet opened successfully
+          }
+        } catch(e) { /* fall through */ }
+      }
+
+      // Fallback: open Stripe checkout (also shows Apple Pay natively on iPhone)
+      const url = `${STRIPE_PAY_LINK}?prefilled_amount=${amountCents}`;
       window.open(url, '_blank', 'noopener,noreferrer');
     });
 

@@ -1232,3 +1232,23 @@ p, li { text-wrap: pretty; max-width: 66ch; }
   color: var(--color-text-muted);
   text-transform: uppercase;
 }
+
+/* ════════════════════════════════════════════
+   STRIPE EXPRESS CHECKOUT
+════════════════════════════════════════════ */
+.express-checkout-wrap {
+  width: 100%;
+  min-height: 56px;
+  margin-bottom: var(--space-3);
+}
+
+/* Fallback side-by-side layout */
+.pay-fallback {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+.pay-fallback .pay-method-btn {
+  flex: 1;
+  margin-bottom: 0;
+}

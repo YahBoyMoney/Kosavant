@@ -331,26 +331,27 @@
         <span class="pay-amount-currency">USD</span>
       </div>
 
-      <!-- Apple Pay -->
-      <button class="pay-method-btn pay-method-btn--apple" id="applePayBtn" aria-label="Pay with Apple Pay">
-        <svg class="pay-method-btn__logo" viewBox="0 0 165 42" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
-          <!-- Apple logo mark -->
-          <path d="M31.5 8.7c1.6-2 2.7-4.8 2.4-7.5-2.3.1-5.1 1.5-6.7 3.5-1.5 1.7-2.7 4.5-2.4 7.1 2.6.2 5.2-1.3 6.7-3.1z"/>
-          <path d="M33.8 12.7c-3.7-.2-6.9 2.1-8.6 2.1-1.8 0-4.5-2-7.5-1.9-3.8.1-7.4 2.2-9.3 5.7-4 6.9-1 17.1 2.8 22.7 1.9 2.8 4.2 5.8 7.2 5.7 2.8-.1 3.9-1.8 7.3-1.8s4.4 1.8 7.5 1.7c3.1-.1 5.1-2.8 7-5.6 2.2-3.2 3.1-6.3 3.1-6.5-.1-.1-6-2.3-6-9.1-.1-5.7 4.6-8.4 4.8-8.5-2.7-3.9-6.8-4.4-8.3-4.5z"/>
-          <!-- "Pay" wordmark -->
-          <text x="55" y="32" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="24" font-weight="500" fill="currentColor">Pay</text>
-        </svg>
-        <span class="pay-method-btn__sub">Available on iPhone &amp; Mac</span>
-      </button>
+      <!-- Stripe Express Checkout — renders real Apple Pay + Google Pay buttons -->
+      <div id="express-checkout-element" class="express-checkout-wrap"></div>
 
-      <!-- Google Pay -->
-      <button class="pay-method-btn pay-method-btn--google" id="googlePayBtn" aria-label="Pay with Google Pay">
-        <span class="gpay-wordmark" aria-hidden="true">
-          <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
-          <span style="color:#5f6368;margin-left:4px;font-weight:500">Pay</span>
-        </span>
-        <span class="pay-method-btn__sub">Available on Android &amp; Chrome</span>
-      </button>
+      <!-- Fallback buttons (shown if Stripe can't render express checkout) -->
+      <div id="pay-fallback" class="pay-fallback" style="display:none">
+        <button class="pay-method-btn pay-method-btn--apple" id="applePayBtn" aria-label="Pay with Apple Pay">
+          <svg class="pay-method-btn__logo" viewBox="0 0 165 42" fill="currentColor" aria-hidden="true">
+            <path d="M31.5 8.7c1.6-2 2.7-4.8 2.4-7.5-2.3.1-5.1 1.5-6.7 3.5-1.5 1.7-2.7 4.5-2.4 7.1 2.6.2 5.2-1.3 6.7-3.1z"/>
+            <path d="M33.8 12.7c-3.7-.2-6.9 2.1-8.6 2.1-1.8 0-4.5-2-7.5-1.9-3.8.1-7.4 2.2-9.3 5.7-4 6.9-1 17.1 2.8 22.7 1.9 2.8 4.2 5.8 7.2 5.7 2.8-.1 3.9-1.8 7.3-1.8s4.4 1.8 7.5 1.7c3.1-.1 5.1-2.8 7-5.6 2.2-3.2 3.1-6.3 3.1-6.5-.1-.1-6-2.3-6-9.1-.1-5.7 4.6-8.4 4.8-8.5-2.7-3.9-6.8-4.4-8.3-4.5z"/>
+            <text x="55" y="32" font-family="-apple-system,sans-serif" font-size="24" font-weight="500" fill="currentColor">Pay</text>
+          </svg>
+          <span class="pay-method-btn__sub">iPhone &amp; Mac</span>
+        </button>
+        <button class="pay-method-btn pay-method-btn--google" id="googlePayBtn" aria-label="Pay with Google Pay">
+          <span class="gpay-wordmark" aria-hidden="true">
+            <span style="color:#4285F4">G</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">o</span><span style="color:#4285F4">g</span><span style="color:#34A853">l</span><span style="color:#EA4335">e</span>
+            <span style="color:#5f6368;margin-left:4px;font-weight:500">Pay</span>
+          </span>
+          <span class="pay-method-btn__sub">Android &amp; Chrome</span>
+        </button>
+      </div>
 
       <!-- Bitcoin -->
       <button class="pay-method-btn pay-method-btn--bitcoin" id="bitcoinBtn" aria-label="Pay with Bitcoin">
@@ -512,7 +513,7 @@
     const btcCopyLabel  = document.getElementById('btcCopyLabel');
     const btcAddressEl  = document.getElementById('btcAddress');
 
-    payBtn.addEventListener('click', () => openModal(payModal));
+    // payBtn click is handled in mountExpressCheckout section below
     payCloseBtn.addEventListener('click', () => closeModal(payModal, payBtn));
     payModal.addEventListener('click', e => { if (e.target === payModal) closeModal(payModal, payBtn); });
 
@@ -521,22 +522,17 @@
       const v = parseFloat(document.getElementById('payAmount').value);
       return v > 0 ? Math.round(v * 100) : 0;
     }
-
     function requireAmount() {
       const input = document.getElementById('payAmount');
       if (getAmountCents() === 0) {
         input.focus();
         input.style.borderColor = 'var(--color-accent)';
-        input.placeholder = 'Enter an amount first';
-        setTimeout(() => {
-          input.style.borderColor = '';
-          input.placeholder = '0.00';
-        }, 2500);
+        input.placeholder = 'Enter amount first';
+        setTimeout(() => { input.style.borderColor=''; input.placeholder='0.00'; }, 2500);
         return false;
       }
       return true;
     }
-
     function stripeCheckout(amountCents) {
       const url = amountCents > 0
         ? `${STRIPE_PAY_LINK}?prefilled_amount=${amountCents}`
@@ -544,39 +540,75 @@
       window.open(url, '_blank', 'noopener,noreferrer');
     }
 
-    // ── Apple Pay ─────────────────────────────
-    // Opens native Apple Wallet via Stripe.js on iPhone/Safari;
-    // falls back to Stripe hosted checkout on other devices.
-    applePayBtn.addEventListener('click', async () => {
-      if (!requireAmount()) return;
-      closeModal(payModal);
-      const cents = getAmountCents();
+    // ── Stripe Express Checkout (real Apple Pay + Google Pay buttons) ──
+    let stripeInstance = null;
+    let expressElements = null;
+    let expressCheckoutEl = null;
 
-      if (window.Stripe && window.ApplePaySession && ApplePaySession.canMakePayments()) {
-        try {
-          const stripe = Stripe(STRIPE_PK);
-          const pr = stripe.paymentRequest({
-            country: 'US', currency: 'usd',
-            total: { label: 'KO Savant', amount: cents },
-            requestPayerName: true,
-          });
-          const check = await pr.canMakePayment();
-          if (check && check.applePay) {
-            pr.show();
-            pr.on('paymentmethod', ev => {
-              ev.complete('success');
-              stripeCheckout(cents); // redirect to confirm charge
-            });
-            return;
-          }
-        } catch(_) {}
-      }
-      stripeCheckout(cents); // fallback — Stripe checkout shows Apple Pay natively
+    async function mountExpressCheckout(amountCents) {
+      if (!window.Stripe) return;
+      const container = document.getElementById('express-checkout-element');
+      const fallback  = document.getElementById('pay-fallback');
+      container.innerHTML = '';
+
+      stripeInstance = Stripe(STRIPE_PK);
+      expressElements = stripeInstance.elements({
+        mode: 'payment',
+        amount: amountCents || 100,
+        currency: 'usd',
+        appearance: {
+          theme: 'night',
+          variables: {
+            colorBackground: '#111111',
+            borderRadius: '10px',
+          },
+        },
+      });
+
+      expressCheckoutEl = expressElements.create('expressCheckout', {
+        buttonType: { applePay: 'plain', googlePay: 'plain' },
+        buttonTheme: { applePay: 'black', googlePay: 'black' },
+        layout: { maxColumns: 2, maxRows: 1, overflow: 'never' },
+      });
+
+      expressCheckoutEl.on('ready', ({ availablePaymentMethods }) => {
+        if (!availablePaymentMethods) {
+          container.style.display = 'none';
+          fallback.style.display = 'flex';
+        } else {
+          container.style.display = 'block';
+          fallback.style.display = 'none';
+        }
+      });
+
+      expressCheckoutEl.on('confirm', async (event) => {
+        // Redirect to Stripe checkout to complete the charge
+        event.paymentFailed({ reason: 'fail' });
+        stripeCheckout(amountCents || 100);
+      });
+
+      expressCheckoutEl.mount('#express-checkout-element');
+    }
+
+    // Mount when modal opens; re-mount when amount changes
+    payBtn.addEventListener('click', () => {
+      openModal(payModal);
+      const cents = getAmountCents() || 100;
+      mountExpressCheckout(cents);
     });
 
-    // ── Google Pay ───────────────────────────
-    // Opens Stripe hosted checkout — shows native Google Pay on Android Chrome.
-    googlePayBtn.addEventListener('click', () => {
+    document.getElementById('payAmount').addEventListener('change', () => {
+      const cents = getAmountCents();
+      if (cents > 0) mountExpressCheckout(cents);
+    });
+
+    // ── Fallback Apple/Google Pay buttons ──────────────
+    document.getElementById('applePayBtn').addEventListener('click', () => {
+      if (!requireAmount()) return;
+      closeModal(payModal);
+      stripeCheckout(getAmountCents());
+    });
+    document.getElementById('googlePayBtn').addEventListener('click', () => {
       if (!requireAmount()) return;
       closeModal(payModal);
       stripeCheckout(getAmountCents());

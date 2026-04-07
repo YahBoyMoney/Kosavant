@@ -509,70 +509,61 @@
       window.location.href = STRIPE_PAY_LINK;
     }
 
-    // ── Stripe Express Checkout (real Apple Pay + Google Pay buttons) ──
-    let stripeInstance = null;
-    let expressElements = null;
-    let expressCheckoutEl = null;
+    // ── Payment Request (Apple Wallet + Google Pay native) ──────
+    // Pre-initialise as soon as modal opens so .show() is sync on click
+    let _pr = null;
+    let _hasApple = false;
+    let _hasGoogle = false;
 
-    async function mountExpressCheckout(amountCents) {
-      if (!window.Stripe) return;
-      const container = document.getElementById('express-checkout-element');
-      const fallback  = document.getElementById('pay-fallback');
-      container.innerHTML = '';
-
-      stripeInstance = Stripe(STRIPE_PK);
-      expressElements = stripeInstance.elements({
-        mode: 'payment',
-        amount: amountCents || 100,
-        currency: 'usd',
-        appearance: {
-          theme: 'night',
-          variables: {
-            colorBackground: '#111111',
-            borderRadius: '10px',
-          },
-        },
-      });
-
-      expressCheckoutEl = expressElements.create('expressCheckout', {
-        buttonType: { applePay: 'plain', googlePay: 'plain' },
-        buttonTheme: { applePay: 'black', googlePay: 'black' },
-        layout: { maxColumns: 2, maxRows: 1, overflow: 'never' },
-      });
-
-      expressCheckoutEl.on('ready', ({ availablePaymentMethods }) => {
-        if (!availablePaymentMethods) {
-          container.style.display = 'none';
-          fallback.style.display = 'flex';
-        } else {
-          container.style.display = 'block';
-          fallback.style.display = 'none';
+    async function initPaymentRequest() {
+      if (!window.Stripe || _pr) return;
+      try {
+        const stripe = Stripe(STRIPE_PK);
+        _pr = stripe.paymentRequest({
+          country: 'US',
+          currency: 'usd',
+          total: { label: 'KO Savant', amount: 100 },
+          requestPayerName: true,
+          requestPayerEmail: false,
+          requestShipping: false,
+        });
+        const result = await _pr.canMakePayment();
+        if (result) {
+          _hasApple  = result.applePay  === true;
+          _hasGoogle = result.googlePay === true;
         }
-      });
-
-      expressCheckoutEl.on('confirm', async (event) => {
-        // Redirect to Stripe checkout to complete the charge
-        event.paymentFailed({ reason: 'fail' });
-        stripeCheckout(amountCents || 100);
-      });
-
-      expressCheckoutEl.mount('#express-checkout-element');
+        _pr.on('paymentmethod', (ev) => {
+          ev.complete('success');
+          window.location.href = STRIPE_PAY_LINK;
+        });
+        _pr.on('cancel', () => openModal(payModal));
+      } catch(_) {}
     }
 
-    // Mount express checkout when modal opens
+    // Open modal + start background init
     payBtn.addEventListener('click', () => {
       openModal(payModal);
-      mountExpressCheckout(100); // default $1 placeholder
+      initPaymentRequest();
     });
 
-    // ── Apple Pay + Google Pay ── both go straight to Stripe checkout
+    // Apple Pay — opens Apple Wallet directly (sync .show())
     document.getElementById('applePayBtn').addEventListener('click', () => {
       closeModal(payModal);
-      stripeCheckout();
+      if (_pr && _hasApple) {
+        _pr.show();
+      } else {
+        window.location.href = STRIPE_PAY_LINK;
+      }
     });
+
+    // Google Pay — opens pay.google.com directly (sync .show())
     document.getElementById('googlePayBtn').addEventListener('click', () => {
       closeModal(payModal);
-      stripeCheckout();
+      if (_pr && _hasGoogle) {
+        _pr.show();
+      } else {
+        window.location.href = STRIPE_PAY_LINK;
+      }
     });
 
     // Bitcoin → show BTC modal

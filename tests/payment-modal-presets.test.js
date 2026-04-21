@@ -20,3 +20,12 @@ test('payment modal includes a selected-service summary area for faster checkout
   assert.match(indexHtml, /id="payPresetSummary"/);
   assert.match(indexHtml, /Selected service/);
 });
+
+test('payment modal exposes Apple Pay, Google Pay, and Bitcoin buttons', () => {
+  assert.match(indexHtml, /id="applePayBtn"/);
+  assert.match(indexHtml, />\s*Apple Pay\s*</);
+  assert.match(indexHtml, /id="gpayBtn"/);
+  assert.match(indexHtml, />\s*Google Pay\s*</);
+  assert.match(indexHtml, /id="bitcoinBtn"/);
+  assert.match(indexHtml, />\s*Bitcoin\s*</);
+});

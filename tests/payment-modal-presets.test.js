@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const privacyPolicyPath = path.join(__dirname, '..', 'privacy-policy.html');
 
 test('payment modal offers the recommended preset service buttons', () => {
   assert.match(indexHtml, /data-payment-preset="15-min-consult"/);
@@ -28,4 +29,14 @@ test('payment modal exposes Apple Pay, Google Pay, and Bitcoin buttons', () => {
   assert.match(indexHtml, />\s*Google Pay\s*</);
   assert.match(indexHtml, /id="bitcoinBtn"/);
   assert.match(indexHtml, />\s*Bitcoin\s*</);
+});
+
+test('payment modal explains that clients enter the agreed amount on Stripe checkout', () => {
+  assert.match(indexHtml, /Enter the agreed amount on Stripe checkout/i);
+  assert.match(indexHtml, /wallet options appear automatically on supported devices/i);
+});
+
+test('site ships a real privacy policy page for checkout and feedback trust', () => {
+  assert.match(indexHtml, /href="https:\/\/kosavant\.com\/privacy-policy\.html"/);
+  assert.equal(fs.existsSync(privacyPolicyPath), true);
 });

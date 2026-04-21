@@ -421,6 +421,7 @@
       <span class="pay-trust-badge">Secure Stripe checkout</span>
       <h3 class="pay-trust-title">Apple Pay, Google Pay, Cash App, bank transfer, and cards.</h3>
       <p class="pay-trust-copy">Checkout is hosted by Stripe so the wallet options show up only when the customer’s browser and device support them. That gives clients the fastest working payment flow instead of broken wallet prompts.</p>
+      <p class="pay-trust-copy">Enter the agreed amount on Stripe checkout after it opens, then finish with Apple Pay, Google Pay, Cash App Pay, bank transfer, or card when those options are available on the client’s device.</p>
       <ul class="pay-trust-list">
         <li>Hosted on Stripe for the most reliable checkout experience</li>
         <li>Apple Pay and Google Pay appear automatically on supported devices</li>
@@ -456,7 +457,7 @@
           </button>
         </div>
 
-        <p class="pay-preset-summary" id="payPresetSummary">Selected service: 15 Min Consult · Suggested payment $50</p>
+        <p class="pay-preset-summary" id="payPresetSummary">Selected service: 15 Min Consult · Enter $50 on Stripe checkout</p>
       </div>
 
       <div class="pay-method-grid" aria-label="Payment methods">
@@ -482,7 +483,7 @@
         </button>
       </div>
 
-      <p class="pay-trust-note" id="payPresetHint">Apple Pay and Google Pay open the same verified Stripe checkout, where wallet options appear automatically on supported devices. For presets above $50, use Stripe’s Change amount control if needed.</p>
+      <p class="pay-trust-note" id="payPresetHint">Apple Pay and Google Pay open the same verified Stripe checkout. Enter the agreed amount on Stripe checkout and wallet options appear automatically on supported devices.</p>
     </div>
 </div>
 
@@ -630,23 +631,23 @@
 
       const { paymentPreset, presetLabel, presetAmount } = selectedButton.dataset;
       const suggestedAmount = presetAmount === 'Flexible'
-        ? 'flexible amount'
-        : `suggested payment ${presetAmount}`;
+        ? 'enter your agreed amount on Stripe checkout'
+        : `enter ${presetAmount} on Stripe checkout`;
 
       payPresetSummary.textContent = `Selected service: ${presetLabel} · ${suggestedAmount}`;
       applePayBtnSub.textContent = paymentPreset === 'custom-payment'
-        ? 'Open secure checkout for a custom amount on supported Apple devices'
-        : `Open secure checkout for ${presetLabel} on supported Apple devices`;
+        ? 'Open secure checkout and enter your agreed amount on supported Apple devices'
+        : `Open secure checkout for ${presetLabel} and enter ${presetAmount} on supported Apple devices`;
       gpayBtnSub.textContent = paymentPreset === 'custom-payment'
-        ? 'Open secure checkout for a custom amount on supported Google Pay devices'
-        : `Open secure checkout for ${presetLabel} on supported Google Pay devices`;
+        ? 'Open secure checkout and enter your agreed amount on supported Google Pay devices'
+        : `Open secure checkout for ${presetLabel} and enter ${presetAmount} on supported Google Pay devices`;
 
       if (paymentPreset === '15-min-consult') {
-        payPresetHint.textContent = 'Apple Pay and Google Pay open the verified Stripe checkout for the fastest handoff, and wallets appear automatically on supported devices.';
+        payPresetHint.textContent = 'Apple Pay and Google Pay open the verified Stripe checkout for the fastest handoff. Enter the agreed amount on Stripe checkout and wallet options appear automatically on supported devices.';
       } else if (paymentPreset === 'custom-payment') {
-        payPresetHint.textContent = 'Apple Pay and Google Pay still open the same verified Stripe checkout. Use Custom Payment for deposits, invoice balances, or a number you already discussed.';
+        payPresetHint.textContent = 'Apple Pay and Google Pay still open the same verified Stripe checkout. Enter the agreed amount on Stripe checkout for deposits, invoice balances, or a number you already discussed.';
       } else {
-        payPresetHint.textContent = `Apple Pay and Google Pay open the same verified Stripe checkout. On the Stripe page, use Change amount if you need to match ${presetAmount}.`;
+        payPresetHint.textContent = `Apple Pay and Google Pay open the same verified Stripe checkout. Enter ${presetAmount} on Stripe checkout for ${presetLabel}, and wallet options appear automatically on supported devices.`;
       }
 
       bitcoinBtnSub.textContent = paymentPreset === 'custom-payment'

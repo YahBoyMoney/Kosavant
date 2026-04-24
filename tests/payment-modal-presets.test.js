@@ -7,10 +7,11 @@ const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf
 const styleCss = fs.readFileSync(path.join(__dirname, '..', 'style.css'), 'utf8');
 const privacyPolicyPath = path.join(__dirname, '..', 'privacy-policy.html');
 
-test('book a consultation has a direct click fallback and visible booking target', () => {
-  assert.match(indexHtml, /id="bookBtn"[^>]*onclick=/i);
-  assert.match(indexHtml, /Book a Consultation/i);
-  assert.match(indexHtml, /id="bookingModal"/);
+test('book a consultation has a direct non-JS path and visible booking section', () => {
+  assert.match(indexHtml, /id="bookBtn"[^>]*href="#consultation-booking"/i);
+  assert.match(indexHtml, /id="consultation-booking"/);
+  assert.match(indexHtml, /Book Your Consultation/i);
+  assert.match(indexHtml, /id="bookingFormInline"/);
 });
 
 test('site accent theme is red again', () => {

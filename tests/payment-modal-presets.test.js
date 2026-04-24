@@ -4,7 +4,20 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const indexHtml = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
+const styleCss = fs.readFileSync(path.join(__dirname, '..', 'style.css'), 'utf8');
 const privacyPolicyPath = path.join(__dirname, '..', 'privacy-policy.html');
+
+test('book a consultation has a direct click fallback and visible booking target', () => {
+  assert.match(indexHtml, /id="bookBtn"[^>]*onclick=/i);
+  assert.match(indexHtml, /Book a Consultation/i);
+  assert.match(indexHtml, /id="bookingModal"/);
+});
+
+test('site accent theme is red again', () => {
+  assert.match(styleCss, /--color-accent:\s*#ef4444/i);
+  assert.match(styleCss, /--color-accent-hover:\s*#f87171/i);
+  assert.match(styleCss, /--color-accent-dim:\s*rgba\(239, 68, 68, 0\.12\)/i);
+});
 
 test('homepage includes a dedicated consulting offers section before payment', () => {
   assert.match(indexHtml, /Choose Your Session/i);

@@ -19,6 +19,7 @@
   <link rel="preconnect" href="https://api.fontshare.com" />
   <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script src="payment-utils.js"></script>
 </head>
 <body>
 
@@ -172,7 +173,7 @@
           <span class="link-card__arrow" aria-hidden="true">→</span>
         </a>
 
-        <!-- Pay Me -->
+        <!-- Secure checkout -->
         <button class="link-card link-card--pay" id="payBtn" aria-haspopup="dialog">
           <span class="link-card__icon link-card__icon--pay">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -181,8 +182,8 @@
             </svg>
           </span>
           <span class="link-card__body">
-            <span class="link-card__label">Pay Me</span>
-            <span class="link-card__sub">Secure checkout · Bitcoin</span>
+            <span class="link-card__label">Secure Checkout</span>
+            <span class="link-card__sub">Stripe, PayPal, and Bitcoin</span>
           </span>
           <span class="link-card__arrow" aria-hidden="true">→</span>
         </button>
@@ -412,7 +413,7 @@
     <div class="modal__header">
       <div>
         <h2 class="modal__title" id="payModalTitle">Pay KO Savant</h2>
-        <p class="modal__sub">Use the secure checkout that actually works across devices.</p>
+        <p class="modal__sub">Choose your service, then use the payment option that fits best.</p>
       </div>
       <button class="modal__close" id="payModalClose" aria-label="Close">&times;</button>
     </div>
@@ -420,14 +421,21 @@
     <div class="pay-trust-panel">
       <div class="pay-modal-hero">
         <div class="pay-hero-copy">
-          <span class="pay-trust-badge">Secure Stripe checkout</span>
-          <h3 class="pay-trust-title">Apple Pay, Google Pay, Cash App, bank transfer, and cards.</h3>
-          <p class="pay-trust-copy">Checkout is hosted by Stripe so the wallet options show up only when the customer’s browser and device support them. That gives clients the fastest working payment flow instead of broken wallet prompts.</p>
-          <p class="pay-trust-copy">Enter the agreed amount on Stripe checkout after it opens, then finish with Apple Pay, Google Pay, Cash App Pay, bank transfer, or card when those options are available on the client’s device.</p>
-          <div class="pay-signal-row" aria-label="Checkout trust signals">
-            <span class="pay-signal-pill">Encrypted</span>
-            <span class="pay-signal-pill">Instant wallet options</span>
-            <span class="pay-signal-pill">No account required</span>
+          <span class="pay-trust-badge">Secure checkout</span>
+          <h3 class="pay-trust-title">Simple payment for consults and brand work.</h3>
+          <p class="pay-trust-copy">Pick the closest service first. Then choose the payment method that matches it without guessing.</p>
+
+          <div class="pay-steps" aria-label="Simple payment steps">
+            <article class="pay-step">
+              <span class="pay-step__label">Step 1</span>
+              <p class="pay-step__title">Choose your service</p>
+              <p class="pay-step__copy">Use the preset that is closest to what you need so the amount stays clear.</p>
+            </article>
+            <article class="pay-step">
+              <span class="pay-step__label">Step 2</span>
+              <p class="pay-step__title">Pick how you want to pay</p>
+              <p class="pay-step__copy">Stripe checkout is ready for the $50 15 Min Consult. PayPal charges the exact selected amount. Bitcoin stays available if you prefer crypto.</p>
+            </article>
           </div>
         </div>
 
@@ -435,24 +443,19 @@
           <p class="pay-summary-card__eyebrow">Selected service</p>
           <h4 class="pay-summary-card__title" id="payServiceLabel">15 Min Consult</h4>
           <p class="pay-summary-card__amount" id="payServiceAmount">$50</p>
-          <p class="pay-summary-card__note" id="payServiceNote">Enter $50 on Stripe checkout</p>
+          <p class="pay-summary-card__note" id="payServiceNote">Stripe checkout is ready for the $50 15 Min Consult.</p>
           <div class="pay-summary-card__meta">
-            <span>Premium guidance</span>
-            <span>Fastest path to payment</span>
+            <span id="payServiceMatch">Best payment match: Secure Stripe checkout</span>
+            <span>Apple Pay, Google Pay, Cash App, bank transfer, and cards</span>
           </div>
         </aside>
       </div>
 
-      <ul class="pay-trust-list">
-        <li>Hosted on Stripe for the most reliable checkout experience</li>
-        <li>Apple Pay and Google Pay appear automatically on supported devices</li>
-        <li>Cash App Pay, bank transfer, and cards are available in the same flow</li>
-      </ul>
-
       <div class="pay-preset-panel" aria-labelledby="payPresetHeading">
         <div class="pay-preset-header">
-          <p class="pay-preset-eyebrow">Recommended payment presets</p>
-          <h3 class="pay-preset-heading" id="payPresetHeading">Choose the closest service so people can pay faster.</h3>
+          <p class="pay-preset-eyebrow">Step 1</p>
+          <h3 class="pay-preset-heading" id="payPresetHeading">Choose your service</h3>
+          <p class="pay-preset-lead">Pick the closest option first. The payment notes update below.</p>
         </div>
 
         <div class="pay-preset-grid" role="list" aria-label="Preset payment options">
@@ -478,61 +481,64 @@
           </button>
         </div>
 
-        <p class="pay-preset-summary" id="payPresetSummary">Selected service: 15 Min Consult · Enter $50 on Stripe checkout</p>
+        <p class="pay-preset-summary" id="payPresetSummary">Selected service: 15 Min Consult · Best payment match: Secure Stripe checkout</p>
       </div>
 
-      <div class="pay-method-grid" aria-label="Payment methods">
-        <a class="pay-method-btn pay-method-btn--apple" id="applePayBtn" href="https://buy.stripe.com/fZu4gyaCyaqqb9E7PlbAs00" target="_blank" rel="noopener noreferrer" aria-describedby="payPresetSummary payPresetHint">
-          <span class="pay-method-btn__badge">Fastest</span>
-          <span class="pay-method-btn__brand">
-            <span class="pay-method-btn__icon pay-method-btn__icon--apple" aria-hidden="true">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M15.17 1.36c.04 1.02-.31 1.98-.95 2.71-.68.78-1.78 1.38-2.81 1.3-.14-.99.32-2.02.93-2.69.67-.77 1.82-1.32 2.83-1.32zm3.55 16.22c-.45 1.03-.99 1.98-1.63 2.86-.88 1.21-1.79 2.41-3.2 2.44-1.38.03-1.82-.82-3.39-.82s-2.07.79-3.37.85c-1.36.05-2.4-1.35-3.29-2.56C2.03 17.88 1 13.91 2.9 10.64c.95-1.62 2.66-2.64 4.5-2.67 1.34-.03 2.61.9 3.39.9.78 0 2.25-1.11 3.79-.95.65.03 2.49.26 3.67 1.98-.09.06-2.19 1.28-2.16 3.82.03 3.02 2.65 4.03 2.68 4.05z"/>
-              </svg>
-            </span>
-            <span class="pay-method-btn__title">Apple Pay</span>
-          </span>
-          <span class="pay-method-btn__sub" id="applePayBtnSub">Open secure checkout for 15 Min Consult on supported Apple devices</span>
-          <span class="pay-method-btn__meta">Face ID / Touch ID · Instant checkout</span>
-          <span class="pay-method-btn__arrow" aria-hidden="true">→</span>
-        </a>
+      <div class="pay-methods-panel" aria-labelledby="payMethodsHeading">
+        <div class="pay-methods-header">
+          <p class="pay-methods-eyebrow">Step 2</p>
+          <h3 class="pay-methods-heading" id="payMethodsHeading">Pick how you want to pay</h3>
+          <p class="pay-methods-copy" id="payPresetHint">Stripe checkout is ready for the $50 15 Min Consult. PayPal charges the exact selected amount. Apple Pay, Google Pay, Cash App, bank transfer, and cards appear inside Stripe when supported.</p>
+        </div>
 
-        <a class="pay-method-btn pay-method-btn--google" id="gpayBtn" href="https://buy.stripe.com/fZu4gyaCyaqqb9E7PlbAs00" target="_blank" rel="noopener noreferrer" aria-describedby="payPresetSummary payPresetHint">
-          <span class="pay-method-btn__badge">Tap to pay</span>
-          <span class="pay-method-btn__brand">
-            <span class="pay-method-btn__icon pay-method-btn__icon--google" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M21.81 12.23c0-.72-.06-1.25-.19-1.81H12v3.42h5.64c-.11.85-.72 2.13-2.07 2.99l-.02.11 3 2.32.21.02c1.94-1.79 3.05-4.42 3.05-7.05z" fill="#4285F4"/>
-                <path d="M12 22c2.76 0 5.08-.9 6.77-2.45l-3.22-2.49c-.86.6-2.01 1.02-3.55 1.02-2.7 0-4.98-1.79-5.79-4.27l-.1.01-3.12 2.41-.03.09C4.64 19.63 8.04 22 12 22z" fill="#34A853"/>
-                <path d="M6.21 13.81A5.98 5.98 0 0 1 5.87 12c0-.63.12-1.24.32-1.81l-.01-.12-3.15-2.45-.1.05A9.99 9.99 0 0 0 2 12c0 1.6.38 3.11 1.05 4.44l3.16-2.63z" fill="#FBBC05"/>
-                <path d="M12 5.92c1.94 0 3.24.84 3.98 1.54l2.9-2.83C17.07 2.95 14.76 2 12 2 8.04 2 4.64 4.37 3.05 7.67l3.26 2.52C7.02 7.71 9.3 5.92 12 5.92z" fill="#EA4335"/>
-              </svg>
+        <div class="pay-method-grid" aria-label="Payment methods">
+          <a class="pay-method-btn pay-method-btn--stripe" id="secureCheckoutBtn" href="https://buy.stripe.com/fZu4gyaCyaqqb9E7PlbAs00" target="_blank" rel="noopener noreferrer" aria-describedby="payPresetSummary payPresetHint">
+            <span class="pay-method-btn__badge">Primary</span>
+            <span class="pay-method-btn__brand">
+              <span class="pay-method-btn__icon pay-method-btn__icon--stripe" aria-hidden="true">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="2" y="2" width="20" height="20" rx="6" fill="currentColor" opacity="0.14"/>
+                  <path d="M8.4 10.1c0-.8.66-1.32 1.72-1.32.94 0 1.9.29 2.85.78l.74-2.28c-.99-.47-2.04-.73-3.29-.73-2.65 0-4.45 1.38-4.45 3.62 0 3.91 5.39 3.29 5.39 5.07 0 .93-.81 1.34-1.91 1.34-1.06 0-2.31-.34-3.36-.91l-.77 2.34c1.02.55 2.49.89 3.98.89 2.87 0 4.78-1.42 4.78-3.73 0-4.2-5.68-3.46-5.68-5.07Z" fill="currentColor"/>
+                </svg>
+              </span>
+              <span class="pay-method-btn__title">Secure Stripe Checkout</span>
             </span>
-            <span class="pay-method-btn__title">Google Pay</span>
-          </span>
-          <span class="pay-method-btn__sub" id="gpayBtnSub">Open secure checkout for 15 Min Consult on supported Google Pay devices</span>
-          <span class="pay-method-btn__meta">Saved cards · One-tap on supported devices</span>
-          <span class="pay-method-btn__arrow" aria-hidden="true">→</span>
-        </a>
+            <span class="pay-method-btn__sub" id="secureCheckoutSub">Stripe checkout is ready for the $50 15 Min Consult.</span>
+            <span class="pay-method-btn__meta" id="secureCheckoutMeta">Apple Pay, Google Pay, Cash App, bank transfer, and cards.</span>
+            <span class="pay-method-btn__arrow" aria-hidden="true">→</span>
+          </a>
 
-        <button class="pay-method-btn pay-method-btn--bitcoin" id="bitcoinBtn" aria-label="Pay with Bitcoin">
-          <span class="pay-method-btn__badge">Crypto</span>
-          <span class="pay-method-btn__brand bitcoin-wordmark">
-            <span class="pay-method-btn__icon pay-method-btn__icon--bitcoin" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="16" cy="16" r="16" fill="#F7931A"/>
-                <path d="M22.9 13.9c.3-2.1-1.3-3.2-3.5-3.9l.7-2.9-1.7-.4-.7 2.8c-.4-.1-.9-.2-1.4-.3l.7-2.9-1.7-.4-.7 2.9c-.4-.1-.7-.2-1-.2l-2.3-.6-.4 1.8s1.3.3 1.2.3c.7.2.8.7.8 1l-.8 3.3c0 0 .1 0 .1.1h-.1l-1.1 4.5c-.1.2-.3.5-.8.4.0 0-1.2-.3-1.2-.3l-.8 1.9 2.2.6c.4.1.8.2 1.2.3l-.7 2.9 1.7.4.7-2.9c.5.1 1 .2 1.4.4l-.7 2.9 1.7.4.7-2.9c2.9.5 5 .3 5.9-2.3.7-2.1-.0-3.3-1.5-4.1 1.1-.3 1.9-1 2.1-2.5zm-3.8 5.3c-.5 2.1-3.9 1-5 .7l.9-3.6c1.1.3 4.6.8 4.1 2.9zm.5-5.3c-.5 1.9-3.3 1-4.3.7l.8-3.2c.9.2 3.9.7 3.5 2.5z" fill="white"/>
-              </svg>
+          <div class="pay-method-paypal" id="paypalButtonWrap" aria-live="polite">
+            <div class="pay-method-paypal__header">
+              <span class="pay-method-btn__badge pay-method-btn__badge--paypal">PayPal</span>
+              <h3 class="pay-method-paypal__title">Pay the exact selected amount with PayPal</h3>
+              <p class="pay-method-paypal__copy">PayPal charges the exact selected amount for the service above. Use it for the $100 consult, the $250 brand audit, or any custom amount you already discussed.</p>
+            </div>
+            <label class="paypal-custom-amount" id="paypalCustomAmountWrap" hidden>
+              <span>Custom amount (USD)</span>
+              <input id="paypalCustomAmount" type="number" min="1" step="0.01" inputmode="decimal" placeholder="Enter agreed amount" />
+            </label>
+            <p class="paypal-status" id="paypalStatus">PayPal will charge the selected amount shown above.</p>
+            <div id="paypalButtons"></div>
+          </div>
+
+          <button class="pay-method-btn pay-method-btn--bitcoin" id="bitcoinBtn" aria-label="Pay with Bitcoin">
+            <span class="pay-method-btn__badge">Other option</span>
+            <span class="pay-method-btn__brand bitcoin-wordmark">
+              <span class="pay-method-btn__icon pay-method-btn__icon--bitcoin" aria-hidden="true">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="16" cy="16" r="16" fill="#F7931A"/>
+                  <path d="M22.9 13.9c.3-2.1-1.3-3.2-3.5-3.9l.7-2.9-1.7-.4-.7 2.8c-.4-.1-.9-.2-1.4-.3l.7-2.9-1.7-.4-.7 2.9c-.4-.1-.7-.2-1-.2l-2.3-.6-.4 1.8s1.3.3 1.2.3c.7.2.8.7.8 1l-.8 3.3c0 0 .1 0 .1.1h-.1l-1.1 4.5c-.1.2-.3.5-.8.4.0 0-1.2-.3-1.2-.3l-.8 1.9 2.2.6c.4.1.8.2 1.2.3l-.7 2.9 1.7.4.7-2.9c.5.1 1 .2 1.4.4l-.7 2.9 1.7.4.7-2.9c2.9.5 5 .3 5.9-2.3.7-2.1-.0-3.3-1.5-4.1 1.1-.3 1.9-1 2.1-2.5zm-3.8 5.3c-.5 2.1-3.9 1-5 .7l.9-3.6c1.1.3 4.6.8 4.1 2.9zm.5-5.3c-.5 1.9-3.3 1-4.3.7l.8-3.2c.9.2 3.9.7 3.5 2.5z" fill="white"/>
+                </svg>
+              </span>
+              <span class="pay-method-btn__title">Bitcoin</span>
             </span>
-            <span class="pay-method-btn__title">Bitcoin</span>
-          </span>
-          <span class="pay-method-btn__sub" id="bitcoinBtnSub">Send BTC directly to my wallet for the selected service</span>
-          <span class="pay-method-btn__meta">Wallet + QR code · Send when you’re ready</span>
-          <span class="pay-method-btn__arrow" aria-hidden="true">→</span>
-        </button>
+            <span class="pay-method-btn__sub" id="bitcoinBtnSub">Send BTC directly for the selected service.</span>
+            <span class="pay-method-btn__meta">Wallet address + QR code</span>
+            <span class="pay-method-btn__arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
       </div>
-
-      <p class="pay-trust-note" id="payPresetHint">Apple Pay and Google Pay open the same verified Stripe checkout. Enter the agreed amount on Stripe checkout and wallet options appear automatically on supported devices.</p>
     </div>
 </div>
 
@@ -644,6 +650,10 @@
 
   <script>
     const BTC_ADDRESS = 'bc1qnqx9kaqg7xnghfc7t6vcms0skxz5thyu37xc5a';
+    const PAYPAL_CLIENT_ID = '';
+    const paymentUtils = window.KOSPaymentUtils || {};
+    const parseAmountToCents = paymentUtils.parseAmountToCents || (() => 0);
+    const formatPayPalAmount = paymentUtils.formatPayPalAmount || ((cents) => (Math.max(0, Number(cents) || 0) / 100).toFixed(2));
 
     const modal = document.getElementById('bookingModal');
     const bookBtn = document.getElementById('bookBtn');
@@ -663,16 +673,51 @@
     const btcAddressEl = document.getElementById('btcAddress');
     const btcRequestedAmount = document.getElementById('btcRequestedAmount');
 
-    const applePayBtn = document.getElementById('applePayBtn');
-    const applePayBtnSub = document.getElementById('applePayBtnSub');
-    const gpayBtn = document.getElementById('gpayBtn');
-    const gpayBtnSub = document.getElementById('gpayBtnSub');
+    const secureCheckoutBtn = document.getElementById('secureCheckoutBtn');
+    const secureCheckoutSub = document.getElementById('secureCheckoutSub');
+    const secureCheckoutMeta = document.getElementById('secureCheckoutMeta');
     const payPresetSummary = document.getElementById('payPresetSummary');
     const payPresetHint = document.getElementById('payPresetHint');
     const payServiceLabel = document.getElementById('payServiceLabel');
     const payServiceAmount = document.getElementById('payServiceAmount');
     const payServiceNote = document.getElementById('payServiceNote');
+    const payServiceMatch = document.getElementById('payServiceMatch');
     const paymentPresetButtons = Array.from(document.querySelectorAll('[data-payment-preset]'));
+    const paypalButtonWrap = document.getElementById('paypalButtonWrap');
+    const paypalButtons = document.getElementById('paypalButtons');
+    const paypalStatus = document.getElementById('paypalStatus');
+    const paypalCustomAmountWrap = document.getElementById('paypalCustomAmountWrap');
+    const paypalCustomAmount = document.getElementById('paypalCustomAmount');
+
+    let currentPaymentPreset = {
+      paymentPreset: '15-min-consult',
+      presetLabel: '15 Min Consult',
+      presetAmount: '$50',
+    };
+
+    function getSelectedPayPalAmountCents() {
+      if (currentPaymentPreset.paymentPreset === 'custom-payment') {
+        return parseAmountToCents(paypalCustomAmount.value, { defaultCents: 0 });
+      }
+
+      return parseAmountToCents(currentPaymentPreset.presetAmount, { defaultCents: 0 });
+    }
+
+    function updatePayPalStatus() {
+      if (!paypalStatus) return;
+
+      if (currentPaymentPreset.paymentPreset === 'custom-payment') {
+        const customCents = getSelectedPayPalAmountCents();
+        paypalCustomAmountWrap.hidden = false;
+        paypalStatus.textContent = customCents
+          ? `PayPal will charge ${formatPayPalAmount(customCents)} USD for Custom Payment.`
+          : 'Enter the agreed amount above to pay with PayPal.';
+        return;
+      }
+
+      paypalCustomAmountWrap.hidden = true;
+      paypalStatus.textContent = `PayPal will charge ${currentPaymentPreset.presetAmount} for ${currentPaymentPreset.presetLabel}.`;
+    }
 
     function updatePaymentPreset(selectedButton) {
       if (!selectedButton) return;
@@ -682,51 +727,147 @@
       });
 
       const { paymentPreset, presetLabel, presetAmount } = selectedButton.dataset;
-      const summaryInstruction = presetAmount === 'Flexible'
-        ? 'Enter your agreed amount on Stripe checkout'
-        : `Enter ${presetAmount} on Stripe checkout`;
+      currentPaymentPreset = { paymentPreset, presetLabel, presetAmount };
+
+      const isFixedStripeConsult = paymentPreset === '15-min-consult';
+      const summaryInstruction = isFixedStripeConsult
+        ? 'Best payment match: Secure Stripe checkout'
+        : paymentPreset === 'custom-payment'
+          ? 'Best payment match: PayPal custom amount'
+          : 'Best payment match: PayPal exact amount';
 
       payPresetSummary.textContent = `Selected service: ${presetLabel} · ${summaryInstruction}`;
       payServiceLabel.textContent = presetLabel;
       payServiceAmount.textContent = presetAmount;
-      payServiceNote.textContent = summaryInstruction;
-      applePayBtnSub.textContent = paymentPreset === 'custom-payment'
-        ? 'Open secure checkout and enter your agreed amount on supported Apple devices'
-        : `Open secure checkout for ${presetLabel} and enter ${presetAmount} on supported Apple devices`;
-      gpayBtnSub.textContent = paymentPreset === 'custom-payment'
-        ? 'Open secure checkout and enter your agreed amount on supported Google Pay devices'
-        : `Open secure checkout for ${presetLabel} and enter ${presetAmount} on supported Google Pay devices`;
+      payServiceNote.textContent = isFixedStripeConsult
+        ? 'Stripe checkout is ready for the $50 15 Min Consult.'
+        : paymentPreset === 'custom-payment'
+          ? 'PayPal handles your custom amount for this selection.'
+          : `PayPal handles the exact ${presetAmount} amount for this selection.`;
+      payServiceMatch.textContent = summaryInstruction;
 
-      if (paymentPreset === '15-min-consult') {
-        payPresetHint.textContent = 'Apple Pay and Google Pay open the verified Stripe checkout for the fastest handoff. Enter the agreed amount on Stripe checkout and wallet options appear automatically on supported devices.';
+      secureCheckoutSub.textContent = isFixedStripeConsult
+        ? 'Stripe checkout is ready for the $50 15 Min Consult.'
+        : 'Stripe checkout is still available for the fixed $50 15 Min Consult.';
+
+      secureCheckoutMeta.textContent = isFixedStripeConsult
+        ? 'Apple Pay, Google Pay, Cash App, bank transfer, and cards.'
+        : paymentPreset === 'custom-payment'
+          ? 'Use PayPal below if you need a custom amount right now.'
+          : `Use PayPal below to pay the exact ${presetAmount} for ${presetLabel}.`;
+
+      if (isFixedStripeConsult) {
+        payPresetHint.textContent = 'Stripe checkout is ready for the $50 15 Min Consult. PayPal charges the exact selected amount. Apple Pay, Google Pay, Cash App, bank transfer, and cards appear inside Stripe when supported.';
       } else if (paymentPreset === 'custom-payment') {
-        payPresetHint.textContent = 'Apple Pay and Google Pay still open the same verified Stripe checkout. Enter the agreed amount on Stripe checkout for deposits, invoice balances, or a number you already discussed.';
+        payPresetHint.textContent = 'For custom amounts, use PayPal below. Stripe remains available if you only need the fixed $50 15 Min Consult.';
       } else {
-        payPresetHint.textContent = `Apple Pay and Google Pay open the same verified Stripe checkout. Enter ${presetAmount} on Stripe checkout for ${presetLabel}, and wallet options appear automatically on supported devices.`;
+        payPresetHint.textContent = `PayPal charges the exact ${presetAmount} for ${presetLabel}. Stripe remains available if you only need the fixed $50 15 Min Consult.`;
       }
 
       bitcoinBtnSub.textContent = paymentPreset === 'custom-payment'
-        ? 'Send BTC directly to my wallet for a custom amount'
-        : `Send BTC directly to my wallet for ${presetLabel.toLowerCase()}`;
+        ? 'Send BTC directly for a custom amount.'
+        : `Send BTC directly for ${presetLabel.toLowerCase()}.`;
 
       btcRequestedAmount.hidden = false;
       btcRequestedAmount.textContent = paymentPreset === 'custom-payment'
         ? 'Selected service: Custom Payment · Amount handled directly'
         : `Selected service: ${presetLabel} · Suggested payment ${presetAmount}`;
 
-      applePayBtn.dataset.selectedPreset = paymentPreset;
-      applePayBtn.dataset.selectedLabel = presetLabel;
-      applePayBtn.dataset.selectedAmount = presetAmount;
-      gpayBtn.dataset.selectedPreset = paymentPreset;
-      gpayBtn.dataset.selectedLabel = presetLabel;
-      gpayBtn.dataset.selectedAmount = presetAmount;
+      if (paymentPreset !== 'custom-payment') {
+        paypalCustomAmount.value = '';
+      }
+
+      updatePayPalStatus();
+    }
+
+    function renderPayPalButtons() {
+      if (!paypalButtons) {
+        return;
+      }
+
+      if (!PAYPAL_CLIENT_ID) {
+        paypalStatus.textContent = 'PayPal setup is waiting on a verified live client ID. Use Stripe or Bitcoin for now.';
+        return;
+      }
+
+      if (!window.paypal) {
+        if (!document.querySelector('script[data-paypal-sdk="true"]')) {
+          const script = document.createElement('script');
+          script.src = `https://www.paypal.com/sdk/js?client-id=${encodeURIComponent(PAYPAL_CLIENT_ID)}&currency=USD&intent=capture&components=buttons`;
+          script.dataset.paypalSdk = 'true';
+          script.onload = () => renderPayPalButtons();
+          script.onerror = () => {
+            paypalStatus.textContent = 'PayPal failed to load. Use Stripe or Bitcoin while this refreshes.';
+          };
+          document.head.appendChild(script);
+        }
+
+        return;
+      }
+
+      if (paypalButtons.dataset.rendered === 'true') {
+        return;
+      }
+
+      window.paypal.Buttons({
+        style: {
+          layout: 'vertical',
+          shape: 'rect',
+          label: 'paypal',
+          tagline: false,
+          height: 48,
+        },
+        createOrder(data, actions) {
+          const amountCents = getSelectedPayPalAmountCents();
+
+          if (!amountCents) {
+            updatePayPalStatus();
+            throw new Error('A valid PayPal amount is required before checkout starts.');
+          }
+
+          return actions.order.create({
+            purchase_units: [{
+              description: `KO Savant · ${currentPaymentPreset.presetLabel}`,
+              amount: {
+                currency_code: 'USD',
+                value: formatPayPalAmount(amountCents),
+              },
+            }],
+          });
+        },
+        onApprove(data, actions) {
+          return actions.order.capture().then((details) => {
+            const payerName = details?.payer?.name?.given_name || 'there';
+            paypalStatus.textContent = `Thanks ${payerName} — your PayPal payment for ${currentPaymentPreset.presetLabel} was received.`;
+          });
+        },
+        onCancel() {
+          updatePayPalStatus();
+        },
+        onError(error) {
+          console.error('PayPal checkout error', error);
+          paypalStatus.textContent = 'PayPal could not start right now. Try again or use Stripe below.';
+        },
+      }).render('#paypalButtons').then(() => {
+        paypalButtons.dataset.rendered = 'true';
+      }).catch((error) => {
+        console.error('PayPal button render failed', error);
+        paypalStatus.textContent = 'PayPal failed to load. Use Stripe or Bitcoin while this refreshes.';
+      });
     }
 
     paymentPresetButtons.forEach(button => {
       button.addEventListener('click', () => updatePaymentPreset(button));
     });
 
+    paypalCustomAmount?.addEventListener('input', () => {
+      if (currentPaymentPreset.paymentPreset === 'custom-payment') {
+        updatePayPalStatus();
+      }
+    });
+
     updatePaymentPreset(paymentPresetButtons.find(button => button.classList.contains('is-selected')) || paymentPresetButtons[0]);
+    renderPayPalButtons();
 
     function openModal(el) {
       el.classList.add('open');

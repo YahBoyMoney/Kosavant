@@ -5,6 +5,7 @@ const {
   parseAmountToCents,
   formatUsd,
   buildStripeCheckoutUrl,
+  formatPayPalAmount,
 } = require('../payment-utils');
 
 test('parseAmountToCents converts decimal dollars to cents', () => {
@@ -41,4 +42,9 @@ test('buildStripeCheckoutUrl leaves the link unchanged when no valid amount exis
     buildStripeCheckoutUrl('https://buy.stripe.com/test_link?foo=bar', 0),
     'https://buy.stripe.com/test_link?foo=bar'
   );
+});
+
+test('formatPayPalAmount converts cents to a PayPal-friendly decimal string', () => {
+  assert.equal(formatPayPalAmount(2599), '25.99');
+  assert.equal(formatPayPalAmount(5000), '50.00');
 });

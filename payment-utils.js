@@ -67,9 +67,15 @@
     return url.toString();
   }
 
+  function formatPayPalAmount(cents) {
+    const normalizedCents = Number.isInteger(cents) && cents > 0 ? cents : 0;
+    return (normalizedCents / 100).toFixed(2);
+  }
+
   return {
     parseAmountToCents,
     formatUsd,
     buildStripeCheckoutUrl,
+    formatPayPalAmount,
   };
 });

@@ -17,31 +17,40 @@ test('payment modal offers the recommended preset service buttons', () => {
   assert.match(indexHtml, /Custom Payment/);
 });
 
-test('payment modal includes a selected-service summary area for faster checkout guidance', () => {
-  assert.match(indexHtml, /id="payPresetSummary"/);
-  assert.match(indexHtml, /Selected service/);
+test('homepage pay entry uses plain secure checkout language', () => {
+  assert.match(indexHtml, /id="payBtn"/);
+  assert.match(indexHtml, />\s*Secure Checkout\s*</i);
+  assert.match(indexHtml, /Stripe, PayPal, and Bitcoin/i);
 });
 
-test('payment modal exposes Apple Pay, Google Pay, and Bitcoin buttons', () => {
-  assert.match(indexHtml, /id="applePayBtn"/);
-  assert.match(indexHtml, />\s*Apple Pay\s*</);
-  assert.match(indexHtml, /id="gpayBtn"/);
-  assert.match(indexHtml, />\s*Google Pay\s*</);
+test('payment modal guides visitors through a simple two-step flow', () => {
+  assert.match(indexHtml, />\s*Step 1\s*</i);
+  assert.match(indexHtml, /Choose your service/i);
+  assert.match(indexHtml, />\s*Step 2\s*</i);
+  assert.match(indexHtml, /Pick how you want to pay/i);
+});
+
+test('payment modal simplifies Stripe into one primary checkout action plus PayPal and Bitcoin', () => {
+  assert.match(indexHtml, /id="secureCheckoutBtn"/);
+  assert.match(indexHtml, /Secure Stripe Checkout/i);
+  assert.match(indexHtml, /id="paypalButtonWrap"/);
+  assert.match(indexHtml, /PayPal/i);
   assert.match(indexHtml, /id="bitcoinBtn"/);
-  assert.match(indexHtml, />\s*Bitcoin\s*</);
+  assert.match(indexHtml, />\s*Bitcoin\s*</i);
+  assert.doesNotMatch(indexHtml, /id="applePayBtn"/);
+  assert.doesNotMatch(indexHtml, /id="gpayBtn"/);
 });
 
-test('payment modal explains that clients enter the agreed amount on Stripe checkout', () => {
-  assert.match(indexHtml, /Enter the agreed amount on Stripe checkout/i);
-  assert.match(indexHtml, /wallet options appear automatically on supported devices/i);
+test('payment modal plainly explains the Stripe and PayPal roles', () => {
+  assert.match(indexHtml, /Stripe checkout is ready for the \$50 15 Min Consult/i);
+  assert.match(indexHtml, /PayPal charges the exact selected amount/i);
+  assert.match(indexHtml, /Apple Pay, Google Pay, Cash App, bank transfer, and cards/i);
 });
 
-test('payment modal includes a premium service summary card and method badges', () => {
+test('payment summary keeps the selected service and best payment match visible', () => {
   assert.match(indexHtml, /id="payServiceLabel"/);
   assert.match(indexHtml, /id="payServiceAmount"/);
-  assert.match(indexHtml, />\s*Fastest\s*</i);
-  assert.match(indexHtml, />\s*Tap to pay\s*</i);
-  assert.match(indexHtml, />\s*Crypto\s*</i);
+  assert.match(indexHtml, /Best payment match/i);
 });
 
 test('site ships a real privacy policy page for checkout and feedback trust', () => {
